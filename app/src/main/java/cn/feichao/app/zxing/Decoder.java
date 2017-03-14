@@ -11,6 +11,7 @@ import com.google.zxing.FormatException;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
+import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Reader;
 import com.google.zxing.Result;
 import com.google.zxing.ResultPointCallback;
@@ -49,11 +50,8 @@ public class Decoder {
 //                rotatedData[x * height + height - y - 1] = data[x + y * width];
 //        }
 
-        // TODO 获取取景框内的图片的数据
-//        PlanarYUVLuminanceSource  luminanceSource = new PlanarYUVLuminanceSource(
-//                data, width, height, 100, 100, 500, 200, false);
-        Bitmap bitmap = ImageUtil.fromYUV(data, width, height, rect);
-        LuminanceSource luminanceSource = new BitmapLuminanceSource(bitmap);
+        PlanarYUVLuminanceSource luminanceSource = new PlanarYUVLuminanceSource(
+                data, width, height, rect.left, rect.top, rect.width(), rect.height(), false);
         Binarizer binarizer = new HybridBinarizer(luminanceSource);
         BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
 
@@ -77,7 +75,7 @@ public class Decoder {
 
     private String decode(BinaryBitmap binaryBitmap, ResultPointCallback callback) {
         try {
-            // TODO zxing decoder setup
+            // TODO zxing decoder hints setup
             Map<DecodeHintType, Object> hints = new HashMap<>();
             if(callback != null) {
                 hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, callback);

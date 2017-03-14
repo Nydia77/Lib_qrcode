@@ -15,8 +15,12 @@ public class MainActivity extends AppCompatActivity {
 
         Button encodeBtn = (Button)findViewById(R.id.encode_btn);
         Button decodeBtn = (Button)findViewById(R.id.decode_btn);
-        encodeBtn.setOnClickListener(new ButtonListener(R.id.encode_btn));
-        decodeBtn.setOnClickListener(new ButtonListener(R.id.decode_btn));
+        if (encodeBtn != null) {
+            encodeBtn.setOnClickListener(new ButtonListener(R.id.encode_btn));
+        }
+        if (decodeBtn != null) {
+            decodeBtn.setOnClickListener(new ButtonListener(R.id.decode_btn));
+        }
     }
 
 

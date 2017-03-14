@@ -2,6 +2,7 @@ package cn.feichao.app.scanner;
 
 /**
  * Created by feichao on 2017/3/11.
+ *
  */
 public class Size {
 
@@ -27,5 +28,13 @@ public class Size {
 
     public void setHeight(int mHeight) {
         this.mHeight = mHeight;
+    }
+
+    @Override
+    public String toString() {
+        return "Size{" +
+                "mWidth=" + mWidth +
+                ", mHeight=" + mHeight +
+                '}';
     }
 }

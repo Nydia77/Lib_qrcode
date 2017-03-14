@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 
 import cn.feichao.app.R;
+import cn.feichao.app.scanner.view.ViewFinderView;
 
-public class ScannerActivity extends AppCompatActivity implements ScannerPresenter.OnScannedListener{
+public class ScannerActivity extends AppCompatActivity implements ScannerPresenter.onScannedListener {
 
     // action
     public static final String SCANIMGACTION = "cn.feichao.app.scanner.SCANLOCALIMAGE";
@@ -31,20 +33,20 @@ public class ScannerActivity extends AppCompatActivity implements ScannerPresent
     }
 
     private void init() {
-        mPresenter = new ScannerPresenter(this);
+        mPresenter = new ScannerPresenter(getApplicationContext(), this);
         Intent intent = getIntent();
         String action = intent.getAction();
         if(action != null && action.equals(SCANIMGACTION)) {
+            // 解析图片
+            // TODO bitmap
             Bitmap bitmap = intent.getParcelableExtra(IMG);
             mPresenter.scanLocalImage(bitmap);
         }else {
+            // 相机扫描
+            // 设置参数
+            Config.setScreenParameter(this);
             initView();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     private void initView() {
@@ -53,8 +55,18 @@ public class ScannerActivity extends AppCompatActivity implements ScannerPresent
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         mScanFragment = new ScanFragment();
+        // TODO 设置fragment的参数
+        mScanFragment.setPresenter(mPresenter);
+        customView(200, 200);
+
         fragmentTransaction.replace(R.id.scan_container, mScanFragment);
         fragmentTransaction.commit();
+    }
+
+    private void customView(int width, int height) {
+        Config.setViewFinderRect(width, height);
+        ViewFinderView viewFinderView = new ViewFinderView(this);
+        mScanFragment.setCustomView(viewFinderView);
     }
 
     @Override
@@ -66,42 +78,18 @@ public class ScannerActivity extends AppCompatActivity implements ScannerPresent
     }
 
     @Override
-    public void onAjusted(Size size) {
-        mScanFragment.ajustSurfaceView(size.getWidth(), size.getHeight());
+    public void onScanFailed() {
+        finish();
     }
 
-    public ScannerPresenter getPresenter() {
-        return mPresenter;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(KeyEvent.KEYCODE_BACK == keyCode) {
+            setResult(RESULT_CANCELED);
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
-    //    private void regiterScanReceiver() {
-//        mReceiver = new ScanBroadcastReceiver();
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(SCANIMGACTION);
-//        intentFilter.addAction(SCANBYCAMERAACTION);
-//        registerReceiver(mReceiver, intentFilter);
-//    }
-//
-//    public void unregisterScanReceiver() {
-//        unregisterReceiver(mReceiver);
-//    }
-//
-//    private class ScanBroadcastReceiver extends BroadcastReceiver {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            String action = intent.getAction();
-//            switch (action) {
-//                case SCANIMGACTION:
-//                    Bitmap bitmap = intent.getParcelableExtra(IMG);
-//                    mPresenter.scanLocalImage(bitmap);
-//                    break;
-//                case SCANBYCAMERAACTION:
-//                    initView();
-////                    mPresenter.scanByCamera();
-//                    break;
-//                default:
-//                    throw new RuntimeException("无效的action");
-//            }
-//        }
-//    }
 }

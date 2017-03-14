@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<instant-run
+    abi="armeabi-v7a,armeabi"
+    api-level="23"
+    density="xxhdpi"
+    format="7"
+    timestamp="1477310704737263"
+    token="-2400538843945869521" >
+
+    <task
+        name="javac"
+        duration="301" />
+    <task
+        name="instant-run-dex"
+        duration="0" />
+    <task
+        name="instant-run-transform"
+        duration="114" />
+    <task
+        name="verifier"
+        duration="59" />
+
+    <artifact
+        location="D:\important\feichao\Lib_qrcode\app\build\outputs\apk\app-debug.apk"
+        type="MAIN" />
+
+    <build timestamp="1477310704737263" >
+        <artifact
+            location="D:\important\feichao\Lib_qrcode\app\build\outputs\apk\app-debug.apk"
+            type="MAIN" />
+    </build>
+
+</instant-run>

@@ -9,8 +9,4 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
-    <cn.feichao.app.scanner.view.ViewFinderView
-        android:id="@+id/view_find_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 </FrameLayout>

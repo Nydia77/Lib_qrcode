@@ -5,18 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.widget.Toast;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by feichao on 2016/12/21.
+ *
  */
 public final class CommonUtils {
 
@@ -37,9 +37,16 @@ public final class CommonUtils {
 
     public static String getFileName(Context context, Uri uri) {
         String filename = "";
-        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-        if (cursor != null && cursor.moveToNext()) {
-            filename = cursor.getString(cursor.getColumnIndex("_display_name"));
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null && cursor.moveToNext()) {
+                filename = cursor.getString(cursor.getColumnIndex("_display_name"));
+            }
+        }finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
         return filename;
     }
@@ -49,12 +56,20 @@ public final class CommonUtils {
             return null;
         }
         Bitmap bitmap = null;
-        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-        if (cursor != null && cursor.moveToNext()) {
-            String path = cursor.getString(cursor.getColumnIndex("_data"));
-
-            bitmap = BitmapFactory.decodeFile(path);
-            return bitmap;
+        InputStream in = null;
+        try {
+            in = context.getContentResolver().openInputStream(uri);
+            bitmap = BitmapFactory.decodeStream(in);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return bitmap;
     }
@@ -65,8 +80,23 @@ public final class CommonUtils {
         //设置文件类型
         intent.setType(fileType);
         // 添加Category属性
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//        intent.addCategory(Intent.CATEGORY_OPENABLE);
         activity.startActivityForResult(intent, requestCode);
     }
 
+
+    public static String bytesToHexString(byte[] src) {
+        StringBuilder stringBuilder = new StringBuilder("0x");
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        char[] buffer = new char[2];
+        for (int i = 0; i < src.length; i++) {
+            buffer[0] = Character.forDigit((src[i] >>> 4) & 0x0F, 16);
+            buffer[1] = Character.forDigit(src[i] & 0x0F, 16);
+            System.out.println(buffer);
+            stringBuilder.append(buffer).append(", 0x");
+        }
+        return stringBuilder.toString();
+    }
 }
